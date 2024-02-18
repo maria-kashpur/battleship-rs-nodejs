@@ -1,8 +1,8 @@
 export const enum Commands {
-  registrationPlayer = "reg",
+  registrationUser = "reg",
   updateWinners = "update_winners",
   createRoom = "create_room",
-  addUser = "add_user_to_room",
+  addUserToRoom = "add_user_to_room",
   createGame = "create_game",
   updateRoom = "update_room",
   addShips = "add_ships",
@@ -13,44 +13,82 @@ export const enum Commands {
   finish = "finish",
 }
 
+//==================================
+export interface Game {}
+
+export interface NeighboringCell {
+  x: number;
+  y: number;
+  type: "vertical" | "horizontal" | "angle";
+}
+
+export const enum ShipLength {
+  "small" = 1,
+  "medium" = 2,
+  "large" = 3,
+  "huge" = 4,
+}
+
+export interface User {
+  name: string;
+  password: string;
+  wins: number;
+  id: number;
+}
+
+export interface Room {
+  id: number;
+  idGame: number | null;
+  idCreactor: User["id"];
+  nameCreator: string;
+  idRival: User["id"] | null | "bot";
+}
+
+export interface Attack {
+  x: number;
+  y: number;
+  status: "miss" | "killed" | "shot";
+}
+
+interface ShipPos {
+  x: number;
+  y: number;
+  hit: true | false;
+}
+
+export interface Game {
+  currentPlayerIndex: 1 | 2;
+  id: number;
+  winPlayer: User["id"] | null;
+  players: {
+    1: {
+      id: User["id"];
+      ships: Ship[] | null;
+      attack: Attack[] | null;
+      field: null | unknown[][];
+    };
+    2: {
+      id: User["id"] | "bot";
+      ships: Ship[] | null;
+      attack: Attack[] | null;
+      field: null | unknown[][];
+    };
+  };
+}
+
 export interface Ship {
   position: {
-    x: number;
+    x: number; // начиная с левого верхнего угла
     y: number;
   };
-  direction: boolean;
+  direction: boolean; // false - gorisontal
   length: number;
   type: "small" | "medium" | "large" | "huge";
 }
-export interface PlayerLoginReq {
-  type: Commands.registrationPlayer;
-  data: {
-    name: string;
-    password: string;
-  };
-  id: 0;
-}
 
-export interface PlayerLoginRes {
-  type: Commands.registrationPlayer;
-  data: {
-    name: string;
-    index: number;
-    error: boolean;
-    errorText: string;
-  };
-  id: 0;
-}
-
-export interface UpdateWinnersRes {
-  type: "update_winners";
-  data: [
-    {
-      name: string;
-      wins: number;
-    },
-  ];
-  id: 0;
+export interface UserWins {
+  name: User["name"];
+  wins: User["wins"];
 }
 
 // Создать новую комнату (создать игровую комнату и добавить себя туда)
@@ -77,22 +115,15 @@ export interface AddUserToRoomRes {
   id: 0;
 }
 
-//Обновить состояние комнаты (отправить список комнат, в которых находится только один игрок)
-export interface UpdateRoomStateRes {
-  type: "update_room";
-  data: [
-    {
-      roomId: number;
-      roomUsers: [
-        {
-          name: string;
-          index: number;
-        },
-      ];
-    },
-  ];
-  id: 0;
+export interface PartialRoom {
+  roomId: number;
+  roomUsers: {
+    name: string;
+    index: number;
+  }[];
 }
+
+//Обновить состояние комнаты (отправить список комнат, в которых находится только один игрок)
 
 export interface AddShipsToBoardReq {
   type: "add_ships";
@@ -103,7 +134,6 @@ export interface AddShipsToBoardReq {
   };
   id: 0;
 }
-
 export interface StartGameRes {
   type: "start_game";
   data: {
