@@ -1,4 +1,4 @@
-import ClientsModel from "../model/clientsModel";
+import ClientsModel, {Client} from "../model/clientsModel";
 import { RoomsModel } from "../model/roomsModel";
 import { UsersModel } from "../model/usersModel";
 import { ReqClient } from "../types/clientMessageTypes";
@@ -11,7 +11,7 @@ import {
 export default class Controller {
   static registrationUser(
     data: ReqClient["data"],
-    index: string,
+    clientID: string
   ): ReqServer["data"] {
     if (!data.name || !data.password) {
       return {
@@ -26,14 +26,15 @@ export default class Controller {
 
     if (!user) {
       const newUser = UsersModel.createUser(name, password);
-
+      ClientsModel.updateUserID(clientID, newUser.id);
       return { name, index: newUser.id, error: false };
     }
 
     const passwordIsValid = user.password === password;
-
-    ClientsModel.updateUserID(user.id);
-
+    if (passwordIsValid) {
+      ClientsModel.updateUserID(clientID, user.id);
+    }
+    
     return passwordIsValid
       ? { name, index: user.id, error: false }
       : {
@@ -48,5 +49,13 @@ export default class Controller {
 
   static updateRooms(): UpdateRoomServer["data"] {
     return RoomsModel.getPartialRooms();
+  }
+
+  static createRoom(clientID: string): UpdateRoomServer["data"] {
+    const userID = ClientsModel.getUserID(clientID);
+    if (!userID) throw new Error('userID is not found')
+    const room = RoomsModel.createRoom(userID);
+    ClientsModel.updateRoomID(clientID, room.id)
+    return this.updateRooms()
   }
 }

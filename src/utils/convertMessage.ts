@@ -23,7 +23,8 @@ export function parseMessage(message: string) {
 
   const result = {
     ...parseMes,
-    data: JSON.parse(parseMes.data),
+    data:
+      parseMes.data.length === 0 ? parseMes.data : JSON.parse(parseMes.data),
   };
 
   if (

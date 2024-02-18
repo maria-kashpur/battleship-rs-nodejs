@@ -2,22 +2,31 @@ import { clients } from "../data/clients";
 import { Game, Room } from "../types/types";
 import counter from "../utils/counter";
 import WebSocket from "ws";
+import { RoomsModel } from "./roomsModel";
 
 export class Client {
   ws: WebSocket;
   userID: null | number;
-  room: null | Room;
-  game: null | Game;
+  roomID: null | number;
+  gameID: null | number;
 
   constructor(ws: WebSocket) {
     this.ws = ws;
     this.userID = null;
-    this.room = null;
-    this.game = null;
+    this.roomID = null;
+    this.gameID = null;
   }
 
   updateUserID(id: number) {
     this.userID = id;
+  }
+
+  updateRoomID(id: number) {
+    this.roomID = id;
+  }
+
+  updateGameId (id: number) {
+    this.gameID = id;
   }
 }
 
@@ -31,12 +40,29 @@ export default class ClientsModel {
     return index;
   }
 
-  static updateUserID(index: number) {
-    if (!(`${index}` in clients)) return;
-    clients[index].updateUserID(index);
+  static updateUserID(idClients: string, idUser: number) {
+    if (!(`${idClients}` in clients)) return;
+    clients[idClients].updateUserID(idUser);
   }
 
-  static deleteClient(id: string) {
-    delete clients[id];
+  static updateRoomID(idClients: string, idRoom: number) {
+    if (!(`${idClients}` in clients)) return;
+    clients[idClients].updateRoomID(idRoom);
+  }
+
+  static updateGameID(idClients: string, idGame: number) {
+    if (!(`${idClients}` in clients)) return;
+    clients[idClients].updateGameId(idGame);
+  }
+
+  static getUserID(idClient: string) {
+    if (!(`${idClient}` in clients)) return null;
+    return clients[idClient].userID;
+  }
+
+  static deleteClient(idClient: string) {
+    const roomID = clients[idClient].roomID;
+    if (roomID) RoomsModel.deleteRoom(roomID);
+    delete clients[idClient];
   }
 }

@@ -6,10 +6,10 @@ import { UsersModel } from "./usersModel";
 export class RoomsModel {
   private static generateRoomID = counter();
 
-  static createRoom(idCreactor: User["id"]): Room | null {
+  static createRoom(idCreactor: User["id"]): Room {
     const id = this.generateRoomID();
     const user = UsersModel.getUserbyID(idCreactor);
-    if (!user) return null;
+    if (!user) throw new Error('user is not found');
     const room: Room = {
       id,
       idGame: null,

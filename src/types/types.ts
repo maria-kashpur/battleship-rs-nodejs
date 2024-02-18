@@ -2,6 +2,7 @@ export const enum Commands {
   registrationUser = "reg",
   updateWinners = "update_winners",
   createRoom = "create_room",
+  playWithBot = "single_play",
   addUserToRoom = "add_user_to_room",
   createGame = "create_game",
   updateRoom = "update_room",
@@ -11,6 +12,29 @@ export const enum Commands {
   randomAttack = "randomAttack",
   turn = "turn",
   finish = "finish",
+}
+
+export interface User {
+  name: string;
+  password: string;
+  wins: number;
+  id: number;
+}
+
+export interface Room {
+  id: number;
+  idGame: number | null;
+  idCreactor: User["id"];
+  nameCreator: string;
+  idRival: User["id"] | null | "bot";
+}
+
+export interface PartialRoom {
+  roomId: number;
+  roomUsers: {
+    name: string;
+    index: number;
+  }[];
 }
 
 //==================================
@@ -27,21 +51,6 @@ export const enum ShipLength {
   "medium" = 2,
   "large" = 3,
   "huge" = 4,
-}
-
-export interface User {
-  name: string;
-  password: string;
-  wins: number;
-  id: number;
-}
-
-export interface Room {
-  id: number;
-  idGame: number | null;
-  idCreactor: User["id"];
-  nameCreator: string;
-  idRival: User["id"] | null | "bot";
 }
 
 export interface Attack {
@@ -91,12 +100,6 @@ export interface UserWins {
   wins: User["wins"];
 }
 
-// Создать новую комнату (создать игровую комнату и добавить себя туда)
-export interface CreateNewRoomReq {
-  type: "create_room";
-  data: "";
-  id: 0;
-}
 // Добавить пользователя в комнату (добавить себя в чью-то комнату, затем удалить комнату из списка комнат)
 export interface AddUserToRoomReq {
   type: "add_user_to_room";
@@ -115,13 +118,7 @@ export interface AddUserToRoomRes {
   id: 0;
 }
 
-export interface PartialRoom {
-  roomId: number;
-  roomUsers: {
-    name: string;
-    index: number;
-  }[];
-}
+
 
 //Обновить состояние комнаты (отправить список комнат, в которых находится только один игрок)
 

@@ -8,3 +8,15 @@ export interface ReqClient {
   };
   id: 0;
 }
+
+export interface CreateRoomClient {
+  type: "create_room";
+  data: "";
+  id: 0;
+}
+
+export interface PlayWithBot {
+  type: Commands.playWithBot;
+  data: "";
+  id: 0;
+}

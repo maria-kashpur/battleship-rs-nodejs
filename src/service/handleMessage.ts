@@ -25,7 +25,7 @@ export default function handleMessage(
         id: 0,
       };
 
-      console.log(`Server's message: ${registrationUser}`);
+      console.log(`Server's message: ${JSON.stringify(registrationUser)}`);
       ws.send(convertServerMessage(registrationUser));
 
       const updateRoomsAfterReq: UpdateRoomServer = {
@@ -33,7 +33,7 @@ export default function handleMessage(
         data: Controller.updateRooms(),
         id: 0,
       };
-      console.log(`Server's message: ${updateRoomsAfterReq}`);
+      console.log(`Server's message: ${JSON.stringify(updateRoomsAfterReq)}`);
       sendMessageClients(server, convertServerMessage(updateRoomsAfterReq));
 
       const updateWinsArterReg: UpdateWinnersServer = {
@@ -41,15 +41,34 @@ export default function handleMessage(
         data: Controller.uppateWinners(),
         id: 0,
       };
-      console.log(`Server's message: ${updateWinsArterReg}`);
+      console.log(`Server's message: ${JSON.stringify(updateWinsArterReg)}`);
       sendMessageClients(server, convertServerMessage(updateWinsArterReg));
 
       break;
 
     case Commands.createRoom:
+      const createRoom = Controller.createRoom(index)
+
+      const updateRoomAfterCreateRoom: UpdateRoomServer = {
+        type: Commands.updateRoom,
+        data: createRoom,
+        id: 0,
+      };
+      console.log(
+        `Server's message: ${JSON.stringify(updateRoomAfterCreateRoom)}`,
+      );
+      sendMessageClients(
+        server,
+        convertServerMessage(updateRoomAfterCreateRoom),
+      );
+
       break;
 
     case Commands.addUserToRoom:
+      
+      break;
+
+    case Commands.playWithBot:
       break;
 
     case Commands.addShips:

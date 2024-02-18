@@ -12,13 +12,14 @@ export interface ReqServer {
 }
 
 export interface UpdateWinnersServer {
-  type: "update_winners";
+  type: Commands.updateWinners;
   data: UserWins[];
   id: 0;
 }
 
 export interface UpdateRoomServer {
-  type: "update_room";
+  type: Commands.updateRoom;
   data: PartialRoom[];
   id: 0;
 }
+
