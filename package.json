@@ -7,7 +7,7 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "start": "webpack --mode production && node ./dist/index.js",
-    "start:dev": "NODE_NO_WARNINGS=1 nodemon",
+    "start:dev": "nodemon",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Andrei Auchynnikau",
