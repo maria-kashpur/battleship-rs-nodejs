@@ -1,4 +1,4 @@
-import { Commands } from "./types";
+import { Commands, Ship } from "./types";
 
 export interface ReqClient {
   type: Commands.registrationUser;
@@ -15,8 +15,39 @@ export interface CreateRoomClient {
   id: 0;
 }
 
-export interface PlayWithBot {
+export interface AddUserToRoomClient {
+  type: "add_user_to_room";
+  data: {
+    indexRoom: number;
+  };
+  id: 0;
+}
+
+export interface PlayWithBotClient {
   type: Commands.playWithBot;
   data: "";
   id: 0;
 }
+
+export interface AddShipsToBoardClient {
+  type: Commands.addShips;
+  data: {
+    gameId: number;
+    ships: Ship[];
+    indexPlayer: number /* id of the player in the current game */;
+  };
+  id: 0;
+}
+
+export interface AttacClient {
+  type: "attack";
+  data: {
+    gameId: number;
+    x: number;
+    y: number;
+    indexPlayer: number /* id of the player in the current game */;
+  };
+  id: 0;
+}
+
+

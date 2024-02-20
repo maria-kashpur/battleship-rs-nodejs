@@ -1,9 +1,12 @@
 import WebSocket from "ws";
 import { Commands } from "../types/types";
 import {
+  AddUserToRoomServer,
   ReqServer,
+  StartGameServer,
   UpdateRoomServer,
   UpdateWinnersServer,
+  TurnServer,
 } from "../types/serverMessageTypes";
 
 export function convertMessageToStr(message: WebSocket.RawData) {
@@ -34,11 +37,30 @@ export function parseMessage(message: string) {
     throw new Error("password or name is not found");
   }
 
+  if (result.type === Commands.addUserToRoom && !("indexRoom" in result.data)) {
+    throw new Error(`indexRoom is not found`);
+  }
+
+  if (
+    result.type === Commands.addShips &&
+    !("gameId" in result.data) &&
+    !("ships" in result.data) &&
+    !("indexPlayer" in result.data)
+  ) {
+    throw new Error("invalid AddShipsToBoardClient");
+  } 
+
   return result;
 }
 
 export function convertServerMessage(
-  message: ReqServer | UpdateWinnersServer | UpdateRoomServer,
+  message:
+    | ReqServer
+    | UpdateWinnersServer
+    | UpdateRoomServer
+    | AddUserToRoomServer
+    | StartGameServer
+    | TurnServer,
 ) {
   return JSON.stringify({
     ...message,

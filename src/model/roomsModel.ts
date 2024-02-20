@@ -9,7 +9,7 @@ export class RoomsModel {
   static createRoom(idCreactor: User["id"]): Room {
     const id = this.generateRoomID();
     const user = UsersModel.getUserbyID(idCreactor);
-    if (!user) throw new Error('user is not found');
+    if (!user) throw new Error("user is not found");
     const room: Room = {
       id,
       idGame: null,

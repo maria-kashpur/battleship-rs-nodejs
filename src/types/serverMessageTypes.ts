@@ -1,4 +1,4 @@
-import { Commands, PartialRoom, UserWins } from "./types";
+import { Commands, PartialRoom, Ship, UserWins } from "./types";
 
 export interface ReqServer {
   type: Commands.registrationUser;
@@ -23,3 +23,28 @@ export interface UpdateRoomServer {
   id: 0;
 }
 
+export interface AddUserToRoomServer {
+  type: Commands.createGame;
+  data: {
+    idGame: number;
+    idPlayer: number; //player id in the game
+  };
+  id: 0;
+}
+
+export interface StartGameServer {
+  type: Commands.start;
+  data: {
+    ships: Ship[];
+    currentPlayerIndex: number;
+  };
+  id: 0;
+}
+
+export interface TurnServer {
+  type: Commands.turn;
+  data: {
+    currentPlayer: number;
+  };
+  id: 0;
+}

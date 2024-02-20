@@ -1,5 +1,4 @@
 import { clients } from "../data/clients";
-import { Game, Room } from "../types/types";
 import counter from "../utils/counter";
 import WebSocket from "ws";
 import { RoomsModel } from "./roomsModel";
@@ -21,11 +20,11 @@ export class Client {
     this.userID = id;
   }
 
-  updateRoomID(id: number) {
+  updateRoomID(id: number | null) {
     this.roomID = id;
   }
 
-  updateGameId (id: number) {
+  updateGameId(id: number) {
     this.gameID = id;
   }
 }
@@ -50,6 +49,11 @@ export default class ClientsModel {
     clients[idClients].updateRoomID(idRoom);
   }
 
+  static resetRoomId(idClients: string) {
+    if (!(`${idClients}` in clients)) return;
+    clients[idClients].updateRoomID(null);
+  }
+
   static updateGameID(idClients: string, idGame: number) {
     if (!(`${idClients}` in clients)) return;
     clients[idClients].updateGameId(idGame);
@@ -58,6 +62,34 @@ export default class ClientsModel {
   static getUserID(idClient: string) {
     if (!(`${idClient}` in clients)) return null;
     return clients[idClient].userID;
+  }
+
+  static getIDClientIndexesByRoomId(
+    idGame: number | null,
+    idUser: number
+  ): string | null {
+    for (let key in clients) {
+      const client = clients[key];
+      if (client.gameID === idGame && client.userID === idUser) {
+        return key;
+      }
+    }
+    return null;
+  }
+
+  static getGameID(idClient: string) {
+    if (!(`${idClient}` in clients)) return null;
+    return clients[idClient].gameID;
+  }
+
+  static getClientIndexesByRoomId(roomID: number): string | null {
+    let clientKey = null;
+    for (let key in clients) {
+      if (clients[key].roomID === roomID) {
+        clientKey = key;
+      }
+    }
+    return clientKey;
   }
 
   static deleteClient(idClient: string) {

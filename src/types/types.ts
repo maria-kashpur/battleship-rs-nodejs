@@ -37,14 +37,23 @@ export interface PartialRoom {
   }[];
 }
 
-//==================================
-export interface Game {}
+export interface Ship {
+  position: {
+    x: number; // начиная с левого верхнего угла
+    y: number;
+  };
+  direction: boolean; // false - gorisontal, true - vertive
+  length: number;
+  type: "small" | "medium" | "large" | "huge";
+}
 
 export interface NeighboringCell {
   x: number;
   y: number;
   type: "vertical" | "horizontal" | "angle";
 }
+
+//==================================
 
 export const enum ShipLength {
   "small" = 1,
@@ -56,7 +65,7 @@ export const enum ShipLength {
 export interface Attack {
   x: number;
   y: number;
-  status: "miss" | "killed" | "shot";
+  status: "miss" | "killed" | "shot"; //"промах", "убит", "ранен"..отправляемого промахом для всех ячеек вокруг корабля
 }
 
 interface ShipPos {
@@ -65,90 +74,10 @@ interface ShipPos {
   hit: true | false;
 }
 
-export interface Game {
-  currentPlayerIndex: 1 | 2;
-  id: number;
-  winPlayer: User["id"] | null;
-  players: {
-    1: {
-      id: User["id"];
-      ships: Ship[] | null;
-      attack: Attack[] | null;
-      field: null | unknown[][];
-    };
-    2: {
-      id: User["id"] | "bot";
-      ships: Ship[] | null;
-      attack: Attack[] | null;
-      field: null | unknown[][];
-    };
-  };
-}
-
-export interface Ship {
-  position: {
-    x: number; // начиная с левого верхнего угла
-    y: number;
-  };
-  direction: boolean; // false - gorisontal
-  length: number;
-  type: "small" | "medium" | "large" | "huge";
-}
 
 export interface UserWins {
   name: User["name"];
   wins: User["wins"];
-}
-
-// Добавить пользователя в комнату (добавить себя в чью-то комнату, затем удалить комнату из списка комнат)
-export interface AddUserToRoomReq {
-  type: "add_user_to_room";
-  data: {
-    indexRoom: number;
-  };
-  id: 0;
-}
-
-export interface AddUserToRoomRes {
-  type: "create_game";
-  data: {
-    idGame: number;
-    idPlayer: number; //player id in the game
-  };
-  id: 0;
-}
-
-
-
-//Обновить состояние комнаты (отправить список комнат, в которых находится только один игрок)
-
-export interface AddShipsToBoardReq {
-  type: "add_ships";
-  data: {
-    gameId: number;
-    ships: Ship[];
-    indexPlayer: number /* id of the player in the current game */;
-  };
-  id: 0;
-}
-export interface StartGameRes {
-  type: "start_game";
-  data: {
-    ships: Ship[];
-    currentPlayerIndex: number /* id of the player in the current game who have sent his ships */;
-  };
-  id: 0;
-}
-
-export interface AttackReq {
-  type: "attack";
-  data: {
-    gameId: number;
-    x: number;
-    y: number;
-    indexPlayer: number /* id of the player in the current game */;
-  };
-  id: 0;
 }
 
 export interface AttackFeedbackRes {
@@ -173,13 +102,7 @@ export interface RandomAttackReq {
   id: 0;
 }
 
-export interface InfoAboutPlayerTurnRes {
-  type: "turn";
-  data: {
-    currentPlayer: number;
-  };
-  id: 0;
-}
+
 
 export interface FinishGameRes {
   type: "finish";

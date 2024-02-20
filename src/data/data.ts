@@ -1,4 +1,5 @@
-import { Game, Room, User } from "../types/types";
+import { Room, User } from "../types/types";
+import { Game } from "../model/gamesModel";
 
 export const users: User[] = [];
 

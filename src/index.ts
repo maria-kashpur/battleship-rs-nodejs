@@ -3,6 +3,7 @@ import { httpServer } from "./http_server/index.js";
 import handleMessage from "./service/handleMessage";
 import { convertMessageToStr } from "./utils/convertMessage";
 import ClientsModel from "./model/clientsModel";
+import { NeighboringCell } from "./types/types.js";
 
 const HTTP_PORT = 8181;
 const SOKET_PORT = 3000;
@@ -34,8 +35,11 @@ server.on("connection", (ws) => {
   ws.on("message", (message) => {
     const clientMessage = convertMessageToStr(message);
     console.log(`Client's message: ${clientMessage}`);
-
-    handleMessage(server, ws, clientMessage, index);
+    try {
+      handleMessage(server, ws, clientMessage, index);
+    } catch (e) {
+      console.error(e);
+    }
   });
 
   ws.on("close", () => {
