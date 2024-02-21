@@ -64,7 +64,7 @@ export default class ClientsModel {
     return clients[idClient].userID;
   }
 
-  static getIDClientIndexesByRoomId(
+  static getIDClientIndexesByGameandUser(
     idGame: number | null,
     idUser: number
   ): string | null {

@@ -1,8 +1,27 @@
 import counter from "../utils/counter";
 import { games } from "../data/data";
-import { Ship, User } from "../types/types";
-import Field, { TypeGroupCells } from "../utils/field";
-import { StartGameServer } from "../types/serverMessageTypes";
+import { AttacStatus, Ship, User } from "../types/types";
+import Field, { Coordinates, TypeGroupCells, TypeNeighboringCell } from "../utils/field";
+import {
+  AttackFeedbackServer,
+  StartGameServer,
+  TurnServer,
+} from "../types/serverMessageTypes";
+
+interface ResultAtac {
+  feedBackAttac: AttackFeedbackServer["data"][];
+  turn: TurnServer["data"];
+}
+
+interface ShipSector {
+  sectors: Coordinates[];
+  targetSector: Coordinates;
+  firstSector: Coordinates;
+  length: number;
+  prev: Coordinates | null;
+  next: Coordinates | null;
+  type: TypeGroupCells;
+}
 
 export class Game {
   id: number;
@@ -59,13 +78,15 @@ export class Game {
     this.players[playerId].ships = ships;
     ships.forEach((ship) => {
       const { length, position } = ship;
+      
       const type =
         ship.direction === false
           ? TypeGroupCells.horizontal
           : TypeGroupCells.vertical;
       const coondinatesShip = Field.getGroupCells(position, length, type);
+      
       coondinatesShip.forEach((el, i) => {
-        this.players[playerId].field.fillCell(el, {
+        const shipSectorData: ShipSector = {
           sectors: coondinatesShip,
           targetSector: el,
           firstSector: position,
@@ -73,7 +94,10 @@ export class Game {
           prev: i === 0 ? null : coondinatesShip[i - 1],
           next:
             i === coondinatesShip.length - 1 ? null : coondinatesShip[i + 1],
-        });
+          type
+        };
+
+        this.players[playerId].field.fillCell(el, shipSectorData);
       });
     });
     return this.startGame();
@@ -114,6 +138,172 @@ export class Game {
       this.currentPlayer = 1;
       this.currentRival = 2;
     }
+  }
+
+  attac(coondinates: Coordinates, indexPlayer: 1 | 2): null | ResultAtac {
+
+
+    const target = this.checkAttac(coondinates);
+
+    if (target === null) {
+      return this.shotAttac(coondinates);
+    }
+
+    return this.successfulAttac(target as ShipSector);
+  }
+
+  isCurrentPlayer(indexPlayer: 1 | 2) {
+    return indexPlayer !== this.currentPlayer;
+  }
+
+  checkAttac(coondinates: Coordinates) {
+    return this.players[this.currentRival].field.getCellValue(coondinates);
+  }
+
+  shotAttac(coondinates: Coordinates): ResultAtac {
+    this.players[this.currentPlayer].attac.fillCell(coondinates, 0);
+
+    const feedBackAttac = [
+      {
+        position: coondinates,
+        currentPlayer: this.currentPlayer,
+        status: AttacStatus.shot,
+      },
+    ];
+
+    this.chageCurrentPlayer();
+
+    const turn = {
+      currentPlayer: this.currentPlayer,
+    };
+
+    return { feedBackAttac, turn };
+  }
+
+  successfulAttac(target: ShipSector) {
+    switch (target.length) {
+      case 1:
+        return this.smallShipAttac(target);
+      case 2:
+      case 3:
+      case 4:
+        return this.bigShipAttac(target);
+      default:
+        throw new Error("unidentified ship");
+    }
+  }
+
+  smallShipAttac(target: ShipSector): ResultAtac {
+    this.players[this.currentPlayer].attac.fillCell(target.targetSector, 1);
+
+    const feedBackAttac = [
+      {
+        position: target.targetSector,
+        currentPlayer: this.currentPlayer,
+        status: AttacStatus.killed,
+      },
+    ];
+
+    this.players[this.currentRival].field
+      .getNeighborsForCell(target.targetSector)
+      .forEach((cell) => {
+        this.players[this.currentPlayer].attac.fillCell(cell, 0);
+        const borderShip = {
+          position: cell,
+          currentPlayer: this.currentPlayer,
+          status: AttacStatus.shot,
+        };
+        feedBackAttac.push(borderShip);
+      });
+
+    const turn = {
+      currentPlayer: this.currentPlayer,
+    };
+
+    return { feedBackAttac, turn };
+  }
+
+  bigShipAttac(target: ShipSector): ResultAtac {
+    const {sectors, length, type, targetSector} = target
+
+    this.players[this.currentPlayer].attac.fillCell(targetSector, length);
+
+    const shipSectors = this.players[this.currentPlayer].attac.getCellsValue(sectors)
+    const isKilled = shipSectors.filter((sector) => sector !== null).length === length;
+    
+    const turn = {
+      currentPlayer: this.currentPlayer,
+    };
+
+    if (isKilled) {
+      const feedBackAttac = [
+        {
+          position: targetSector,
+          currentPlayer: this.currentPlayer,
+          status: AttacStatus.killed,
+        },
+      ];
+
+      this.players[this.currentRival].field.getNeighborsForCells(
+        sectors,
+        type,
+      ).forEach((cell) => {
+        const value = this.players[this.currentPlayer].attac.getCellValue(cell);
+        if(value !== 0) {
+          this.players[this.currentPlayer].attac.fillCell(cell, 0);
+          const borderShip = {
+            position: cell,
+            currentPlayer: this.currentPlayer,
+            status: AttacStatus.shot,
+          };
+          feedBackAttac.push(borderShip);
+        }
+      });
+
+      return { feedBackAttac, turn };
+    } 
+    
+    const feedBackAttac = [
+      {
+        position: target.targetSector,
+        currentPlayer: this.currentPlayer,
+        status: AttacStatus.miss,
+      },
+    ];
+    
+    const borderCells = shipSectors.reduce((acc: Coordinates[], sector, i, arr) => {
+      const isMiss = sector !== null;
+      const isMissNext = arr[i + 1] !== null;
+      const isMissPrev = arr[i - 1] !== null;
+      const borderTipe = type === TypeGroupCells.horizontal ? TypeNeighboringCell.vertical : TypeNeighboringCell.horizontal;
+      const borderSell = this.players[
+          this.currentPlayer
+        ].attac.getNeighborsForCell(sectors[i], borderTipe);
+
+      if ((i === 0 && isMiss && isMissNext) ) {
+        borderSell.forEach(el => acc.push(el))
+      } else if (i === (arr.length - 1) && isMissPrev) {
+        borderSell.forEach((el) => acc.push(el));
+      } else if (isMiss && (isMissPrev || isMissNext)) {
+        borderSell.forEach((el) => acc.push(el));
+      }
+      return acc;
+    }, [])
+
+    borderCells.forEach(cell => {
+      const value = this.players[this.currentPlayer].attac.getCellValue(cell);
+      if (value !== 0) {
+        this.players[this.currentPlayer].attac.fillCell(cell, 0);
+        const borderShip = {
+          position: cell,
+          currentPlayer: this.currentPlayer,
+          status: AttacStatus.shot,
+        };
+        feedBackAttac.push(borderShip);
+      }
+    })
+
+    return { feedBackAttac, turn };
   }
 }
 

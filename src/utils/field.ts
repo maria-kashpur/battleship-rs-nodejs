@@ -5,13 +5,13 @@ export interface Coordinates {
   y: number
 }
 
-const enum TypeNeighboringCell {
+export const enum TypeNeighboringCell {
   vertical = "vertical",
   horizontal = "horizontal",
   angle = "angle",
 }
 
-const enum TypeNeighboringCells {
+export const enum TypeNeighboringCells {
   headTail = "headTail",
   center = "center",
   angle = "angle",
@@ -121,7 +121,7 @@ export default class Field {
   getNeighborsForCells(
     coondinates: Coordinates[],
     typeGroupCells: TypeGroupCells,
-    typeNeighboringCells: TypeNeighboringCells
+    typeNeighboringCells?: TypeNeighboringCells
   ) {
     let headTail: Coordinates[] = [];
     let center: Coordinates[] = [];

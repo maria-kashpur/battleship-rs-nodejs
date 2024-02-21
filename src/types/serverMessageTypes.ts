@@ -1,4 +1,4 @@
-import { Commands, PartialRoom, Ship, UserWins } from "./types";
+import { AttacStatus, Commands, PartialRoom, Ship, UserWins } from "./types";
 
 export interface ReqServer {
   type: Commands.registrationUser;
@@ -45,6 +45,19 @@ export interface TurnServer {
   type: Commands.turn;
   data: {
     currentPlayer: number;
+  };
+  id: 0;
+}
+
+export interface AttackFeedbackServer {
+  type: Commands.attack;
+  data: {
+    position: {
+      x: number;
+      y: number;
+    };
+    currentPlayer: number /* id of the player in the current game */;
+    status: AttacStatus;
   };
   id: 0;
 }

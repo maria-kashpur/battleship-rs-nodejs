@@ -53,6 +53,12 @@ export interface NeighboringCell {
   type: "vertical" | "horizontal" | "angle";
 }
 
+export enum AttacStatus {
+  miss = "miss",
+  killed = "killed",
+  shot = "shot",
+}
+
 //==================================
 
 export const enum ShipLength {
@@ -74,23 +80,9 @@ interface ShipPos {
   hit: true | false;
 }
 
-
 export interface UserWins {
   name: User["name"];
   wins: User["wins"];
-}
-
-export interface AttackFeedbackRes {
-  type: "attack";
-  data: {
-    position: {
-      x: number;
-      y: number;
-    };
-    currentPlayer: number /* id of the player in the current game */;
-    status: "miss" | "killed" | "shot";
-  };
-  id: 0;
 }
 
 export interface RandomAttackReq {
@@ -101,8 +93,6 @@ export interface RandomAttackReq {
   };
   id: 0;
 }
-
-
 
 export interface FinishGameRes {
   type: "finish";

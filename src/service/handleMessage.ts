@@ -5,6 +5,7 @@ import WebSocket from "ws";
 import { parseMessage, convertServerMessage } from "../utils/convertMessage";
 import {
   AddUserToRoomServer,
+  AttackFeedbackServer,
   ReqServer,
   StartGameServer,
   TurnServer,
@@ -12,7 +13,7 @@ import {
   UpdateWinnersServer,
 } from "../types/serverMessageTypes";
 import { clients } from "../data/clients";
-import { AddShipsToBoardClient } from "../types/clientMessageTypes";
+import { AddShipsToBoardClient, AttacClient } from "../types/clientMessageTypes";
 
 export default function handleMessage(
   server: WebSocket.Server<typeof WebSocket, typeof IncomingMessage>,
@@ -128,13 +129,38 @@ export default function handleMessage(
           console.log(`Server's message: ${JSON.stringify(turn)}\n`);
           clients[el.index].ws.send(convertServerMessage(turn));
         })
-
-
       }
 
       break;
 
     case Commands.attack:
+     const attac = Controller.attac(clientMessage.data)
+      // attac.clients.forEach(key => {
+      //   if (!key) return;
+      //   if (attac.data === null) return;
+      //   const { feedBackAttac, turn } = attac.data;
+
+      //   feedBackAttac.forEach((data) => {
+      //     const attackFeedback: AttackFeedbackServer = {
+      //       type: Commands.attack,
+      //       data,
+      //       id: 0,
+      //     };
+      //     console.log(JSON.stringify(attackFeedback));
+      //     clients[key].ws.send(convertServerMessage(attackFeedback));
+      //   });
+
+      //   const turnMessage: TurnServer = {
+      //     type: Commands.turn,
+      //     data: turn,
+      //     id: 0
+      //   };
+      //   console.log(JSON.stringify(turnMessage));
+      //   clients[key].ws.send(convertServerMessage(turnMessage));
+      // })
+
+
+
       break;
 
     case Commands.randomAttack:

@@ -7,6 +7,7 @@ import {
   UpdateRoomServer,
   UpdateWinnersServer,
   TurnServer,
+  AttackFeedbackServer,
 } from "../types/serverMessageTypes";
 
 export function convertMessageToStr(message: WebSocket.RawData) {
@@ -60,7 +61,8 @@ export function convertServerMessage(
     | UpdateRoomServer
     | AddUserToRoomServer
     | StartGameServer
-    | TurnServer,
+    | TurnServer
+    | AttackFeedbackServer,
 ) {
   return JSON.stringify({
     ...message,

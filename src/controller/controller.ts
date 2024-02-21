@@ -4,15 +4,18 @@ import ClientsModel from "../model/clientsModel";
 import GamesModel from "../model/gamesModel";
 import { RoomsModel } from "../model/roomsModel";
 import { UsersModel } from "../model/usersModel";
-import { ReqClient } from "../types/clientMessageTypes";
+import { AttacClient, ReqClient } from "../types/clientMessageTypes";
+import { convertServerMessage } from "../utils/convertMessage";
 import {
   AddUserToRoomServer,
+  AttackFeedbackServer,
   ReqServer,
   StartGameServer,
+  TurnServer,
   UpdateRoomServer,
   UpdateWinnersServer,
 } from "../types/serverMessageTypes";
-import { Ship } from "../types/types";
+import { AttacStatus, Commands, Ship } from "../types/types";
 
 export default class Controller {
   static registrationUser(
@@ -115,9 +118,9 @@ export default class Controller {
     gameId: number,
     ships: Ship[],
     indexPlayer: number
-  ): { data: StartGameServer["data"]; index: string}[] | null {
+  ): { data: StartGameServer["data"]; index: string }[] | null {
     const game = GamesModel.getGamebyId(gameId);
-    
+
     if (!game) throw new Error("game is not found");
     const validIndexPlayer = indexPlayer === 1 ? 1 : indexPlayer === 2 ? 2 : 0;
     if (validIndexPlayer === 0) throw new Error("invalid indexPlayer");
@@ -125,14 +128,88 @@ export default class Controller {
     const startGame = game.addShips(validIndexPlayer, ships);
     const result = startGame?.map((el) => {
       const userID = el.userID;
-      const clientID = ClientsModel.getIDClientIndexesByRoomId(game.id, userID);
-      if (clientID === null) throw new Error("Client in not found")
+      const clientID = ClientsModel.getIDClientIndexesByGameandUser(
+        game.id,
+        userID
+      );
+      if (clientID === null) throw new Error("Client in not found");
       return {
         data: el.data,
         index: clientID,
       };
     });
 
-    return result === undefined ? null : result 
+    return result === undefined ? null : result;
+  }
+
+  static attac(data: AttacClient["data"]) {
+    const { gameId, x, y, indexPlayer } = data;
+
+    const game = GamesModel.getGamebyId(gameId);
+    if (!game) throw new Error("game is not found");
+
+    const validIndexPlayer = indexPlayer === 1 ? 1 : indexPlayer === 2 ? 2 : 0;
+    if (validIndexPlayer === 0) throw new Error("invalid indexPlayer");
+
+    const coordinates = { x, y };
+
+    const { usersID } = game;
+
+    const clientsKeys = [usersID[1], usersID[2]].map(id => ClientsModel.getIDClientIndexesByGameandUser(game.id, id))
+
+
+
+    const feedBackAttac = game.attac(coordinates, validIndexPlayer)
+    
+    if (feedBackAttac === null) {
+      return;
+    }
+    
+    const messagefeedBackAttac: AttackFeedbackServer = {
+      type: Commands.attack,
+      data: {
+        position: coordinates,
+        currentPlayer: 2,
+        status: feedBackAttac,
+      },
+      id: 0,
+    };
+    // const messagefeedBackAttac2: AttackFeedbackServer = {
+    //   type: Commands.attack,
+    //   data: {
+    //     position: coordinates,
+    //     currentPlayer: 1,
+    //     status: AttacStatus.shot,
+    //   },
+    //   id: 0,
+    // };
+
+
+
+    const turnMessage: TurnServer = {
+      type: Commands.turn,
+      data: {
+        currentPlayer: 1
+      },
+      id: 0
+    }
+    
+
+    clientsKeys.forEach(key => {
+      if (key === null) return;
+      clients[key].ws.send(convertServerMessage(messagefeedBackAttac));
+      // clients[key].ws.send(convertServerMessage(messagefeedBackAttac2));
+      clients[key].ws.send(convertServerMessage(turnMessage));
+    })
+
+
+
+
+
+    // const resultOfAttac = game.attac(coordinates, validIndexPlayer);
+
+    // const clientsID = ClientsModel.getClientIndexesByRoomId;
+
+    // return {clients: clientsKeys, data: resultOfAttac}
   }
 }
