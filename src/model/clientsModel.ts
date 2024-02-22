@@ -2,6 +2,7 @@ import { clients } from "../data/clients";
 import counter from "../utils/counter";
 import WebSocket from "ws";
 import { RoomsModel } from "./roomsModel";
+import { Room, User } from "../types/types";
 
 export class Client {
   ws: WebSocket;
@@ -59,14 +60,19 @@ export default class ClientsModel {
     clients[idClients].updateGameId(idGame);
   }
 
-  static getUserID(idClient: string) {
+  static getUserID(idClient: string): User["id"] | null {
     if (!(`${idClient}` in clients)) return null;
     return clients[idClient].userID;
   }
 
+  static getRoomID(idClient: string): Room["id"] | null {
+    if (!(`${idClient}` in clients)) return null;
+    return clients[idClient].roomID;
+  }
+
   static getIDClientIndexesByGameandUser(
     idGame: number | null,
-    idUser: number
+    idUser: number,
   ): string | null {
     for (let key in clients) {
       const client = clients[key];
@@ -82,7 +88,7 @@ export default class ClientsModel {
     return clients[idClient].gameID;
   }
 
-  static getClientIndexesByRoomId(roomID: number): string | null {
+  static getClientKeyByRoomId(roomID: number): string | null {
     let clientKey = null;
     for (let key in clients) {
       if (clients[key].roomID === roomID) {

@@ -8,13 +8,16 @@ import {
   UpdateWinnersServer,
   TurnServer,
   AttackFeedbackServer,
+  FinishGameServer,
 } from "../types/serverMessageTypes";
+import { IncomingMessage } from "http";
+import { clients } from "../data/clients";
 
-export function convertMessageToStr(message: WebSocket.RawData) {
+export function convertMessageClientToStr(message: WebSocket.RawData) {
   return message && typeof message === "string" ? message : message.toString();
 }
 
-export function parseMessage(message: string) {
+export function parseMessageClient(message: string) {
   let parseMes;
   try {
     parseMes = JSON.parse(message);
@@ -49,7 +52,7 @@ export function parseMessage(message: string) {
     !("indexPlayer" in result.data)
   ) {
     throw new Error("invalid AddShipsToBoardClient");
-  } 
+  }
 
   return result;
 }
@@ -62,10 +65,37 @@ export function convertServerMessage(
     | AddUserToRoomServer
     | StartGameServer
     | TurnServer
-    | AttackFeedbackServer,
+    | AttackFeedbackServer
+    | FinishGameServer
 ) {
   return JSON.stringify({
     ...message,
     data: JSON.stringify(message.data),
+  });
+}
+
+export function sendServerMessageforClient(
+  clientIndex: string,
+  message: string,
+) {
+  if (!(clientIndex in clients)) return;
+
+  const { ws } = clients[clientIndex];
+  if (ws.readyState === WebSocket.OPEN) {
+    console.log(`Server message: ${message} \n`);
+    ws.send(message);
+  }
+}
+
+export function sendServerMessageforAllClients(
+  server: WebSocket.Server<typeof WebSocket, typeof IncomingMessage>,
+  message: string,
+): void {
+  console.log(`Server message: ${message}\n`);
+
+  server.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(message);
+    }
   });
 }

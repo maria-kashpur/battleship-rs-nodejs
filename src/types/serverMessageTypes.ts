@@ -56,8 +56,16 @@ export interface AttackFeedbackServer {
       x: number;
       y: number;
     };
-    currentPlayer: number /* id of the player in the current game */;
+    currentPlayer: 1 | 2 /* id of the player in the current game */;
     status: AttacStatus;
+  };
+  id: 0;
+}
+
+export interface FinishGameServer {
+  type: Commands.finish;
+  data: {
+    winPlayer: 1 | 2 /* id of the player in the current game session */;
   };
   id: 0;
 }

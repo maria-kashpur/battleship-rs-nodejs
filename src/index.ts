@@ -1,7 +1,7 @@
 import WebSocket from "ws";
 import { httpServer } from "./http_server/index.js";
 import handleMessage from "./service/handleMessage";
-import { convertMessageToStr } from "./utils/convertMessage";
+import { convertMessageClientToStr } from "./utils/messageHelper";
 import ClientsModel from "./model/clientsModel";
 import { NeighboringCell } from "./types/types.js";
 
@@ -33,7 +33,7 @@ server.on("connection", (ws) => {
   console.log(`Client established connection: id ${index}`);
 
   ws.on("message", (message) => {
-    const clientMessage = convertMessageToStr(message);
+    const clientMessage = convertMessageClientToStr(message);
     console.log(`Client's message: ${clientMessage}`);
     try {
       handleMessage(server, ws, clientMessage, index);

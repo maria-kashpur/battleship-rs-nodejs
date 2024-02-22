@@ -1,8 +1,8 @@
 import getRandomIntInclusive from "./getRandomIntInclusive";
 
 export interface Coordinates {
-  x: number,
-  y: number
+  x: number;
+  y: number;
 }
 
 export const enum TypeNeighboringCell {
@@ -28,7 +28,7 @@ export default class Field {
 
   constructor(fieldSize: { w: number; h: number }, fill = null) {
     this.field = Array.from({ length: fieldSize.h }, () =>
-      Array.from({ length: fieldSize.w }).fill(fill)
+      Array.from({ length: fieldSize.w }).fill(fill),
     );
     this.fieldSize = fieldSize;
   }
@@ -57,7 +57,7 @@ export default class Field {
 
   getNeighborsForCell(
     target: Coordinates,
-    type?: TypeNeighboringCell
+    type?: TypeNeighboringCell,
   ): Coordinates[] {
     const currentX = target.x;
     const currentY = target.y;
@@ -83,16 +83,16 @@ export default class Field {
 
     switch (type) {
       case TypeNeighboringCell.angle:
-        coondinates.concat(angle);
+        coondinates.push(...angle);
         break;
       case TypeNeighboringCell.horizontal:
-        coondinates.concat(horizontal);
+        coondinates.push(...horizontal);
         break;
       case TypeNeighboringCell.vertical:
-        coondinates.concat(vertical);
+        coondinates.push(...vertical);
         break;
       default:
-        coondinates.concat(angle, horizontal, vertical);
+        coondinates.push(...angle, ...horizontal, ...vertical);
         break;
     }
 
@@ -104,7 +104,7 @@ export default class Field {
   static getGroupCells(
     firstCell: Coordinates,
     length: number,
-    type: TypeGroupCells
+    type: TypeGroupCells,
   ): Coordinates[] {
     const currentX = firstCell.x;
     const currentY = firstCell.y;
@@ -115,13 +115,13 @@ export default class Field {
       return { x, y };
     });
 
-    return coondinates
+    return coondinates;
   }
 
   getNeighborsForCells(
     coondinates: Coordinates[],
     typeGroupCells: TypeGroupCells,
-    typeNeighboringCells?: TypeNeighboringCells
+    typeNeighboringCells?: TypeNeighboringCells,
   ) {
     let headTail: Coordinates[] = [];
     let center: Coordinates[] = [];
@@ -165,16 +165,16 @@ export default class Field {
 
     switch (typeNeighboringCells) {
       case TypeNeighboringCells.headTail:
-        result.concat(headTail);
+        result.push(...headTail);
         break;
       case TypeNeighboringCells.center:
-        result.concat(center);
+        result.push(...center);
         break;
       case TypeNeighboringCells.angle:
-        result.concat(angle);
+        result.push(...angle);
         break;
       default:
-        result.concat(headTail, center, angle);
+        result.push(...headTail, ...center, ...angle);
         break;
     }
 
@@ -187,7 +187,7 @@ export default class Field {
         el.x >= 0 &&
         el.y >= 0 &&
         el.x < this.fieldSize.w &&
-        el.y < this.fieldSize.h
+        el.y < this.fieldSize.h,
     );
   }
 

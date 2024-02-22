@@ -49,5 +49,3 @@ export interface AttacClient {
   };
   id: 0;
 }
-
-
