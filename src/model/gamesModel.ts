@@ -6,17 +6,9 @@ import Field, {
   TypeGroupCells,
   TypeNeighboringCell,
 } from "../utils/field";
-import {
-  AttackFeedbackServer,
-  TurnServer,
-} from "../types/serverMessageTypes";
-import shipsPositions from "../data/shipsPositions";
+import { AttackFeedbackServer } from "../types/serverMessageTypes";
 import getRandomIntInclusive from "../utils/getRandomIntInclusive";
-
-interface ResultAtac {
-  feedBackAttac: AttackFeedbackServer["data"][];
-  turn: TurnServer["data"];
-}
+import generateShipPositions from "../data/shipsPositions";
 
 interface ShipSector {
   sectors: Coordinates[];
@@ -88,7 +80,7 @@ export class Game {
 
       const coondinatesShip = Field.getGroupCells(position, length, type);
 
-      coondinatesShip.forEach((el, i) => {
+      coondinatesShip.forEach((el) => {
         const shipSectorData: ShipSector = {
           sectors: coondinatesShip,
           targetSector: el,
@@ -105,7 +97,7 @@ export class Game {
     });
   }
 
-  isStartGame(): Boolean {
+  isStartGame(): boolean {
     return this.players[1].ships !== null && this.players[2].ships !== null;
   }
 
@@ -133,7 +125,7 @@ export class Game {
 
   attac(
     position: Coordinates,
-    callback: (game: Game, data: AttackFeedbackServer["data"]) => void
+    callback: (game: Game, data: AttackFeedbackServer["data"]) => void,
   ) {
     if (this.players[this.currentPlayer].attac.getCellValue(position) !== null)
       return;
@@ -157,14 +149,14 @@ export class Game {
         : this.shotAttac(
             target as ShipSector,
             shipSectors as (null | number)[],
-            callback
+            callback,
           );
     }
   }
 
   missAttac(
     position: Coordinates,
-    callback: (game: Game, data: AttackFeedbackServer["data"]) => void
+    callback: (game: Game, data: AttackFeedbackServer["data"]) => void,
   ) {
     if (this.players[this.currentPlayer].attac.getCellValue(position) === 0) {
       return;
@@ -183,7 +175,7 @@ export class Game {
   shotAttac(
     target: ShipSector,
     shipSectors: (null | number)[],
-    callback: (game: Game, data: AttackFeedbackServer["data"]) => void
+    callback: (game: Game, data: AttackFeedbackServer["data"]) => void,
   ) {
     const data = {
       position: target.targetSector,
@@ -214,7 +206,7 @@ export class Game {
         }
         return acc;
       },
-      []
+      [],
     );
 
     borderCells.forEach((cell) => {
@@ -224,7 +216,7 @@ export class Game {
 
   killedAttack(
     target: ShipSector,
-    callback: (game: Game, data: AttackFeedbackServer["data"]) => void
+    callback: (game: Game, data: AttackFeedbackServer["data"]) => void,
   ) {
     target.sectors.forEach((position) => {
       const data = {
@@ -260,16 +252,17 @@ export class Game {
     throw new Error("game is not finish");
   }
 
-  // добавить потом рамдомный выбор поля
   addShipsBot() {
-    const shipsBot = shipsPositions[0];
+    const shipsBot = generateShipPositions();
     this.addShips(2, shipsBot);
   }
 
   randomAttac(): Coordinates {
     const isSuccessfully = getRandomIntInclusive(0, 1) === 0 ? false : true;
-    let coondinates = isSuccessfully ? this.successfullyRandomAttac() : this.failRandomAttac();
-    
+    let coondinates = isSuccessfully
+      ? this.successfullyRandomAttac()
+      : this.failRandomAttac();
+
     if (coondinates.length === 0) {
       coondinates = this.successfullyRandomAttac();
     }
@@ -289,12 +282,12 @@ export class Game {
 
   private failRandomAttac(): Coordinates[] {
     return this.players[this.currentRival].field
-        .getAllCoordinatesWithValue(null)
-        .filter((sector) => {
-          const statusSector =
-            this.players[this.currentPlayer].attac.getCellValue(sector);
-          if (statusSector === null) return sector;
-        });
+      .getAllCoordinatesWithValue(null)
+      .filter((sector) => {
+        const statusSector =
+          this.players[this.currentPlayer].attac.getCellValue(sector);
+        if (statusSector === null) return sector;
+      });
   }
 }
 
