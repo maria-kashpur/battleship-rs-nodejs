@@ -33,7 +33,7 @@ const attac = (
     const winner = game.getWinner();
     finishGame(winner, game, server);
   } else {
-    turn(game);
+    turn(server, game);
   }
 };
 

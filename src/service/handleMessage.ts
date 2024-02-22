@@ -36,7 +36,7 @@ export default function handleMessage(
       break;
 
     case Commands.addShips:
-      addShips(clientMessage.data);
+      addShips(server, clientMessage.data);
       break;
 
     case Commands.attack:
