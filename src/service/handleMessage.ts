@@ -4,15 +4,17 @@ import WebSocket from "ws";
 import { parseMessageClient } from "../utils/messageHelper";
 import registrationUser from "../controller/registrationUser";
 import createRoom from "../controller/createRoom";
-import createGame from "../controller/createGame";
+import addUserToRoom from "../controller/createGame";
 import addShips from "../controller/addShips";
 import attac from "../controller/attack";
+import playWithBot from "../controller/playWithBot";
+import randomAttac from "../controller/randomAttac";
 
 export default function handleMessage(
   server: WebSocket.Server<typeof WebSocket, typeof IncomingMessage>,
   ws: WebSocket,
   message: string,
-  clientKey: string,
+  clientKey: string
 ) {
   const clientMessage = parseMessageClient(message);
 
@@ -26,10 +28,11 @@ export default function handleMessage(
       break;
 
     case Commands.addUserToRoom:
-      createGame(server, clientKey, clientMessage.data);
+      addUserToRoom(server, clientKey, clientMessage.data);
       break;
 
     case Commands.playWithBot:
+      playWithBot(server, clientKey)
       break;
 
     case Commands.addShips:
@@ -41,6 +44,7 @@ export default function handleMessage(
       break;
 
     case Commands.randomAttack:
+      randomAttac(server, clientMessage.data)
       break;
 
     default:

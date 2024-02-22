@@ -1,4 +1,6 @@
-const shipsPositions = [
+import { Ship } from "../types/types";
+
+const shipsPositions: Ship[][] = [
   [
     {
       position: {
@@ -185,3 +187,6 @@ const shipsPositions = [
     },
   ],
 ];
+
+
+export default shipsPositions;

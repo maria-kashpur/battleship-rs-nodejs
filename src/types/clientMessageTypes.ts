@@ -34,18 +34,27 @@ export interface AddShipsToBoardClient {
   data: {
     gameId: number;
     ships: Ship[];
-    indexPlayer: number /* id of the player in the current game */;
+    indexPlayer: number /* id of the player in the current game session */;
   };
   id: 0;
 }
 
 export interface AttacClient {
-  type: "attack";
+  type: Commands.attack;
   data: {
     gameId: number;
     x: number;
     y: number;
-    indexPlayer: number /* id of the player in the current game */;
+    indexPlayer: number /* id of the player in the current game session */;
+  };
+  id: 0;
+}
+
+export interface randomAttac {
+  type: Commands.randomAttack;
+  data: {
+    gameId: number;
+    indexPlayer: number /* id of the player in the current game session */;
   };
   id: 0;
 }

@@ -10,6 +10,8 @@ import {
   AttackFeedbackServer,
   TurnServer,
 } from "../types/serverMessageTypes";
+import shipsPositions from "../data/shipsPositions";
+import getRandomIntInclusive from "../utils/getRandomIntInclusive";
 
 interface ResultAtac {
   feedBackAttac: AttackFeedbackServer["data"][];
@@ -19,10 +21,7 @@ interface ResultAtac {
 interface ShipSector {
   sectors: Coordinates[];
   targetSector: Coordinates;
-  firstSector: Coordinates;
   length: number;
-  prev: Coordinates | null;
-  next: Coordinates | null;
   type: TypeGroupCells;
 }
 
@@ -35,7 +34,6 @@ export class Game {
   private currentPlayer: 1 | 2;
   private currentRival: 1 | 2;
   private fieldSize: { w: number; h: number };
-  private shipCount: number;
   players: {
     1: {
       field: Field;
@@ -53,7 +51,6 @@ export class Game {
 
   constructor(idGame: number, keyCreator: string, keyRival: string) {
     this.fieldSize = { w: 10, h: 10 };
-    this.shipCount = 10;
     this.id = idGame;
     this.currentPlayer = 1;
     this.currentRival = 2;
@@ -95,16 +92,16 @@ export class Game {
         const shipSectorData: ShipSector = {
           sectors: coondinatesShip,
           targetSector: el,
-          firstSector: position,
           length,
-          prev: i === 0 ? null : coondinatesShip[i - 1],
-          next:
-            i === coondinatesShip.length - 1 ? null : coondinatesShip[i + 1],
           type,
         };
 
         this.players[playerId].field.fillCell(el, shipSectorData);
       });
+
+      if (this.clientsKey[2] === "bot" && this.players[2].ships === null) {
+        this.addShipsBot();
+      }
     });
   }
 
@@ -138,7 +135,8 @@ export class Game {
     position: Coordinates,
     callback: (game: Game, data: AttackFeedbackServer["data"]) => void
   ) {
-    if (this.players[this.currentPlayer].attac.getCellValue(position) !== null) return;
+    if (this.players[this.currentPlayer].attac.getCellValue(position) !== null)
+      return;
 
     const target = this.getRivalCell(position);
 
@@ -170,7 +168,7 @@ export class Game {
   ) {
     if (this.players[this.currentPlayer].attac.getCellValue(position) === 0) {
       return;
-    } 
+    }
 
     this.players[this.currentPlayer].attac.fillCell(position, 0);
 
@@ -207,16 +205,16 @@ export class Game {
           this.currentPlayer
         ].attac.getNeighborsForCell(target.sectors[i], borderTipe);
 
-        if (i === 0 && (isMiss && isMissNext)) {
-          acc.push(...borderCell)
-        } else if (i === arr.length - 1 && (isMiss && isMissPrev)) {
+        if (i === 0 && isMiss && isMissNext) {
+          acc.push(...borderCell);
+        } else if (i === arr.length - 1 && isMiss && isMissPrev) {
           acc.push(...borderCell);
         } else if (isMiss && (isMissPrev || isMissNext)) {
           acc.push(...borderCell);
         }
         return acc;
       },
-      [],
+      []
     );
 
     borderCells.forEach((cell) => {
@@ -228,27 +226,29 @@ export class Game {
     target: ShipSector,
     callback: (game: Game, data: AttackFeedbackServer["data"]) => void
   ) {
-    target.sectors.forEach(position => {
-    const data = {
-      position,
-      currentPlayer: this.currentPlayer,
-      status: AttacStatus.killed,
-    };
-    callback(this, data);
-    })
+    target.sectors.forEach((position) => {
+      const data = {
+        position,
+        currentPlayer: this.currentPlayer,
+        status: AttacStatus.killed,
+      };
+      callback(this, data);
+    });
 
-    const borderShip = this.players[this.currentRival].field.getNeighborsForCells(target.sectors, target.type)
+    const borderShip = this.players[
+      this.currentRival
+    ].field.getNeighborsForCells(target.sectors, target.type);
 
-    borderShip.forEach(cell => {
-      this.missAttac(cell, callback)
-    })    
+    borderShip.forEach((cell) => {
+      this.missAttac(cell, callback);
+    });
 
     this.players[this.currentRival].shipsLeft =
       this.players[this.currentRival].shipsLeft - 1;
   }
 
   isFinish() {
-    return this.players[this.currentRival].shipsLeft === 0
+    return this.players[this.currentRival].shipsLeft === 0;
   }
 
   getWinner() {
@@ -257,7 +257,44 @@ export class Game {
     } else if (this.players[2].shipsLeft === 0) {
       return 1;
     }
-    throw new Error('game is not finish')
+    throw new Error("game is not finish");
+  }
+
+  // добавить потом рамдомный выбор поля
+  addShipsBot() {
+    const shipsBot = shipsPositions[0];
+    this.addShips(2, shipsBot);
+  }
+
+  randomAttac(): Coordinates {
+    const isSuccessfully = getRandomIntInclusive(0, 1) === 0 ? false : true;
+    let coondinates = isSuccessfully ? this.successfullyRandomAttac() : this.failRandomAttac();
+    
+    if (coondinates.length === 0) {
+      coondinates = this.successfullyRandomAttac();
+    }
+
+    return coondinates[getRandomIntInclusive(0, coondinates.length - 1)];
+  }
+
+  private successfullyRandomAttac(): Coordinates[] {
+    return this.players[this.currentRival].field
+      .getAllCoordinatesWithoutValue(null)
+      .filter((sector) => {
+        const statusSector =
+          this.players[this.currentPlayer].attac.getCellValue(sector);
+        if (statusSector === null) return sector;
+      });
+  }
+
+  private failRandomAttac(): Coordinates[] {
+    return this.players[this.currentRival].field
+        .getAllCoordinatesWithValue(null)
+        .filter((sector) => {
+          const statusSector =
+            this.players[this.currentPlayer].attac.getCellValue(sector);
+          if (statusSector === null) return sector;
+        });
   }
 }
 

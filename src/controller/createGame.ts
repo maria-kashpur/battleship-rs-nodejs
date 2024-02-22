@@ -12,10 +12,10 @@ import {
 import WebSocket from "ws";
 import updateRooms from "./updateRooms";
 
-const createGame = (
+const addUserToRoom = (
   server: WebSocket.Server<typeof WebSocket, typeof IncomingMessage>,
   clientKeyRival: string,
-  { indexRoom }: AddUserToRoomClient["data"],
+  { indexRoom }: AddUserToRoomClient["data"]
 ) => {
   const clientKeyCreator = ClientsModel.getClientKeyByRoomId(indexRoom);
   if (!clientKeyCreator) throw new Error("client is not found");
@@ -27,11 +27,15 @@ const createGame = (
   ClientsModel.updateGameID(clientKeyCreator, game.id);
 
   deleteRoom(server, clientKeyCreator);
-  addUserToRoom(game.id, 1, clientKeyCreator);
-  addUserToRoom(game.id, 2, clientKeyRival);
+  createGame(game.id, 1, clientKeyCreator);
+  createGame(game.id, 2, clientKeyRival);
 };
 
-function addUserToRoom(idGame: Game["id"], idPlayer: 1 | 2, clientKey: string) {
+export function createGame(
+  idGame: Game["id"],
+  idPlayer: 1 | 2,
+  clientKey: string
+) {
   const message: AddUserToRoomServer = {
     type: Commands.createGame,
     data: {
@@ -46,7 +50,7 @@ function addUserToRoom(idGame: Game["id"], idPlayer: 1 | 2, clientKey: string) {
 
 function deleteRoom(
   server: WebSocket.Server<typeof WebSocket, typeof IncomingMessage>,
-  clientKey: string,
+  clientKey: string
 ) {
   const roomID = ClientsModel.getRoomID(clientKey);
   if (roomID === null) throw new Error("roomID is not found");
@@ -62,4 +66,4 @@ function isValidUsers(clientKeyCreator: string, clientKeyRival: string) {
   return userIDCreator !== userIDRival;
 }
 
-export default createGame;
+export default addUserToRoom;
