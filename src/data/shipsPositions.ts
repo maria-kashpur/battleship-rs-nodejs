@@ -101,7 +101,7 @@ function generateShipPositions() {
   ships.push(...shipGeneranor(1, SHIPS_COUNT.small));
 
   const field = Array.from({ length: FIELD_SIZE.h }, () =>
-    Array.from({ length: FIELD_SIZE.w }).fill(0)
+    Array.from({ length: FIELD_SIZE.w }).fill(0),
   );
 
   function placeShips(): Ship[] {

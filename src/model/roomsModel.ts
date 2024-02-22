@@ -28,14 +28,14 @@ export class RoomsModel {
 
   static getPartialRooms(): PartialRoom[] {
     return rooms.reduce((acc: PartialRoom[], room) => {
-      const { idRival, id, idCreactor } = room;
+      const { idRival, id, idCreactor, nameCreator } = room;
       if (idRival === null) {
         const partialRoom = {
-          roomId: room.id,
+          roomId: id,
           roomUsers: [
             {
-              name: room.nameCreator,
-              index: room.idCreactor,
+              name: nameCreator,
+              index: idCreactor,
             },
           ],
         };

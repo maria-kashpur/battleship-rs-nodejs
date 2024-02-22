@@ -15,7 +15,7 @@ import updateRooms from "./updateRooms";
 const addUserToRoom = (
   server: WebSocket.Server<typeof WebSocket, typeof IncomingMessage>,
   clientKeyRival: string,
-  { indexRoom }: AddUserToRoomClient["data"]
+  { indexRoom }: AddUserToRoomClient["data"],
 ) => {
   const clientKeyCreator = ClientsModel.getClientKeyByRoomId(indexRoom);
   if (!clientKeyCreator) throw new Error("client is not found");
@@ -34,7 +34,7 @@ const addUserToRoom = (
 export function createGame(
   idGame: Game["id"],
   idPlayer: 1 | 2,
-  clientKey: string
+  clientKey: string,
 ) {
   const message: AddUserToRoomServer = {
     type: Commands.createGame,
@@ -50,7 +50,7 @@ export function createGame(
 
 function deleteRoom(
   server: WebSocket.Server<typeof WebSocket, typeof IncomingMessage>,
-  clientKey: string
+  clientKey: string,
 ) {
   const roomID = ClientsModel.getRoomID(clientKey);
   if (roomID === null) throw new Error("roomID is not found");

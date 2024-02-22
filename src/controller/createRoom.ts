@@ -1,5 +1,4 @@
 import { IncomingMessage } from "http";
-import { clients } from "../data/clients";
 import ClientsModel from "../model/clientsModel";
 import { RoomsModel } from "../model/roomsModel";
 import updateRooms from "./updateRooms";

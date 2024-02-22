@@ -6,21 +6,21 @@ import attac from "./attack";
 
 const randomAttac = (
   server: WebSocket.Server<typeof WebSocket, typeof IncomingMessage>,
-  { gameId, indexPlayer }: randomAttac["data"]
+  { gameId, indexPlayer }: randomAttac["data"],
 ) => {
-    const game = GamesModel.getGamebyId(gameId);
-    if (!game) throw new Error("game is not found");
+  const game = GamesModel.getGamebyId(gameId);
+  if (!game) throw new Error("game is not found");
 
-    if (indexPlayer !== game.getCurrentPlayer()) return;
+  if (indexPlayer !== game.getCurrentPlayer()) return;
 
-    const coondinates = game.randomAttac()
-    const data = {
-      gameId,
-      x: coondinates.x,
-      y: coondinates.y,
-      indexPlayer
-    }
-    attac(server, data)
+  const coondinates = game.randomAttac();
+  const data = {
+    gameId,
+    x: coondinates.x,
+    y: coondinates.y,
+    indexPlayer,
+  };
+  attac(server, data);
 };
 
 export default randomAttac;

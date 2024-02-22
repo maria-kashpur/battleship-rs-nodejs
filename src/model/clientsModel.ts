@@ -79,7 +79,7 @@ export default class ClientsModel {
     idGame: number | null,
     idUser: number,
   ): string | null {
-    for (let key in clients) {
+    for (const key in clients) {
       const client = clients[key];
       if (client.gameID === idGame && client.userID === idUser) {
         return key;
@@ -95,7 +95,7 @@ export default class ClientsModel {
 
   static getClientKeyByRoomId(roomID: number): string | null {
     let clientKey = null;
-    for (let key in clients) {
+    for (const key in clients) {
       if (clients[key].roomID === roomID) {
         clientKey = key;
       }

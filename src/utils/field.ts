@@ -79,7 +79,7 @@ export default class Field {
       { x: currentX, y: currentY + 1, type },
     ];
 
-    let coondinates: Coordinates[] = [];
+    const coondinates: Coordinates[] = [];
 
     switch (type) {
       case TypeNeighboringCell.angle:
@@ -123,9 +123,9 @@ export default class Field {
     typeGroupCells: TypeGroupCells,
     typeNeighboringCells?: TypeNeighboringCells,
   ) {
-    let headTail: Coordinates[] = [];
-    let center: Coordinates[] = [];
-    let angle: Coordinates[] = [];
+    const headTail: Coordinates[] = [];
+    const center: Coordinates[] = [];
+    const angle: Coordinates[] = [];
 
     if (typeGroupCells === TypeGroupCells.horizontal) {
       coondinates.map((sector, i, arr) => {
@@ -161,7 +161,7 @@ export default class Field {
       });
     }
 
-    let result: Coordinates[] = [];
+    const result: Coordinates[] = [];
 
     switch (typeNeighboringCells) {
       case TypeNeighboringCells.headTail:

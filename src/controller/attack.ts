@@ -1,12 +1,13 @@
 import { IncomingMessage } from "http";
-import { clients } from "../data/clients";
 import ClientsModel from "../model/clientsModel";
 import GamesModel, { Game } from "../model/gamesModel";
 import { UsersModel } from "../model/usersModel";
 import { AttacClient } from "../types/clientMessageTypes";
-import { AttackFeedbackServer, FinishGameServer } from "../types/serverMessageTypes";
+import {
+  AttackFeedbackServer,
+  FinishGameServer,
+} from "../types/serverMessageTypes";
 import { Commands } from "../types/types";
-import { Coordinates } from "../utils/field";
 import {
   convertServerMessage,
   sendServerMessageforClient,
@@ -17,7 +18,7 @@ import WebSocket from "ws";
 
 const attac = (
   server: WebSocket.Server<typeof WebSocket, typeof IncomingMessage>,
-  data: AttacClient["data"]
+  data: AttacClient["data"],
 ) => {
   const coondinates = { x: data.x, y: data.y };
   const game = GamesModel.getGamebyId(data.gameId);
@@ -37,11 +38,7 @@ const attac = (
   }
 };
 
-function feedBackAttacMessage(
-  game: Game,
-  data: AttackFeedbackServer["data"],
-) {
-
+function feedBackAttacMessage(game: Game, data: AttackFeedbackServer["data"]) {
   const message: AttackFeedbackServer = {
     type: Commands.attack,
     data,
@@ -55,7 +52,7 @@ function feedBackAttacMessage(
 function finishGame(
   winPlayer: 1 | 2,
   game: Game,
-  server: WebSocket.Server<typeof WebSocket, typeof IncomingMessage>
+  server: WebSocket.Server<typeof WebSocket, typeof IncomingMessage>,
 ) {
   const message: FinishGameServer = {
     type: Commands.finish,
@@ -80,10 +77,7 @@ function finishGame(
 
   ClientsModel.resetGameId(client1);
   ClientsModel.resetGameId(client2);
-  GamesModel.deleteGame(gameID)
+  GamesModel.deleteGame(gameID);
 }
-
-
-
 
 export default attac;

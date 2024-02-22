@@ -39,10 +39,10 @@ export interface PartialRoom {
 
 export interface Ship {
   position: {
-    x: number; // начиная с левого верхнего угла
+    x: number;
     y: number;
   };
-  direction: boolean; // false - gorisontal, true - vertive
+  direction: boolean; // false - gorisontal, true - vertical
   length: number;
   type: "small" | "medium" | "large" | "huge";
 }
@@ -59,18 +59,20 @@ export enum AttacStatus {
   shot = "shot",
 }
 
-//==================================
-
-
 export interface Attack {
   x: number;
   y: number;
-  status: "miss" | "killed" | "shot"; //"промах", "убит", "ранен"..отправляемого промахом для всех ячеек вокруг корабля
+  status: "miss" | "killed" | "shot";
 }
-
 
 export interface UserWins {
   name: User["name"];
   wins: User["wins"];
 }
 
+export const enum ShipType {
+  "huge" = 4,
+  "large" = 3,
+  "medium" = 2,
+  "small" = 1,
+}

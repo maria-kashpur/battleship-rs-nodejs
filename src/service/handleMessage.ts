@@ -14,7 +14,7 @@ export default function handleMessage(
   server: WebSocket.Server<typeof WebSocket, typeof IncomingMessage>,
   ws: WebSocket,
   message: string,
-  clientKey: string
+  clientKey: string,
 ) {
   const clientMessage = parseMessageClient(message);
 
@@ -32,7 +32,7 @@ export default function handleMessage(
       break;
 
     case Commands.playWithBot:
-      playWithBot(server, clientKey)
+      playWithBot(server, clientKey);
       break;
 
     case Commands.addShips:
@@ -44,7 +44,7 @@ export default function handleMessage(
       break;
 
     case Commands.randomAttack:
-      randomAttac(server, clientMessage.data)
+      randomAttac(server, clientMessage.data);
       break;
 
     default:

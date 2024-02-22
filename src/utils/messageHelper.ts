@@ -66,7 +66,7 @@ export function convertServerMessage(
     | StartGameServer
     | TurnServer
     | AttackFeedbackServer
-    | FinishGameServer
+    | FinishGameServer,
 ) {
   return JSON.stringify({
     ...message,

@@ -3,7 +3,6 @@ import { httpServer } from "./http_server/index.js";
 import handleMessage from "./service/handleMessage";
 import { convertMessageClientToStr } from "./utils/messageHelper";
 import ClientsModel from "./model/clientsModel";
-import { NeighboringCell } from "./types/types.js";
 
 const HTTP_PORT = 8181;
 const SOKET_PORT = 3000;

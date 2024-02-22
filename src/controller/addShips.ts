@@ -12,7 +12,7 @@ import WebSocket from "ws";
 
 const addShips = (
   server: WebSocket.Server<typeof WebSocket, typeof IncomingMessage>,
-  data: AddShipsToBoardClient["data"]
+  data: AddShipsToBoardClient["data"],
 ) => {
   const { gameId, ships, indexPlayer } = data;
 

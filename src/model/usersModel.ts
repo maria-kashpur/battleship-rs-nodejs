@@ -28,7 +28,7 @@ export class UsersModel {
   }
 
   static updateWins(id: User["id"]) {
-    const user = this.getUserbyID(id)
+    const user = this.getUserbyID(id);
     if (!user) return;
     user.wins = user.wins + 1;
   }
