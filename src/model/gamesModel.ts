@@ -138,6 +138,8 @@ export class Game {
     position: Coordinates,
     callback: (game: Game, data: AttackFeedbackServer["data"]) => void
   ) {
+    if (this.players[this.currentPlayer].attac.getCellValue(position) !== null) return;
+
     const target = this.getRivalCell(position);
 
     if (target === null) {
@@ -166,6 +168,10 @@ export class Game {
     position: Coordinates,
     callback: (game: Game, data: AttackFeedbackServer["data"]) => void
   ) {
+    if (this.players[this.currentPlayer].attac.getCellValue(position) === 0) {
+      return;
+    } 
+
     this.players[this.currentPlayer].attac.fillCell(position, 0);
 
     const data = {
