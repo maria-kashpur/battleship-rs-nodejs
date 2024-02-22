@@ -37,7 +37,7 @@ export default function handleMessage(
       break;
 
     case Commands.attack:
-      attac(clientMessage.data);
+      attac(server, clientMessage.data);
       break;
 
     case Commands.randomAttack:

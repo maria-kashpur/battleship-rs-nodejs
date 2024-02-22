@@ -247,9 +247,9 @@ export class Game {
 
   getWinner() {
     if (this.players[1].shipsLeft === 0) {
-      return 1;
-    } else if (this.players[2].shipsLeft === 0) {
       return 2;
+    } else if (this.players[2].shipsLeft === 0) {
+      return 1;
     }
     throw new Error('game is not finish')
   }

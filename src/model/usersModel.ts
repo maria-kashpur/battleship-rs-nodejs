@@ -27,6 +27,12 @@ export class UsersModel {
     return user ? user : null;
   }
 
+  static updateWins(id: User["id"]) {
+    const user = this.getUserbyID(id)
+    if (!user) return;
+    user.wins = user.wins + 1;
+  }
+
   static getInfoAboutWins(): { name: User["name"]; wins: User["wins"] }[] {
     return users.reduce((acc: UserWins[], user) => {
       const { name, wins } = user;

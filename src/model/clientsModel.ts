@@ -25,7 +25,7 @@ export class Client {
     this.roomID = id;
   }
 
-  updateGameId(id: number) {
+  updateGameId(id: number | null) {
     this.gameID = id;
   }
 }
@@ -53,6 +53,11 @@ export default class ClientsModel {
   static resetRoomId(idClients: string) {
     if (!(`${idClients}` in clients)) return;
     clients[idClients].updateRoomID(null);
+  }
+
+  static resetGameId(idClients: string) {
+    if (!(`${idClients}` in clients)) return;
+    clients[idClients].updateGameId(null);
   }
 
   static updateGameID(idClients: string, idGame: number) {
