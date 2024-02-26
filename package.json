@@ -6,9 +6,8 @@
   "scripts": {
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "eslint \"src/**/*.ts\" --fix",
-    "start": "webpack --mode production && node ./dist/index.js",
-    "start:dev": "nodemon",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:prod": "webpack --mode production && node ./dist/index.js",
+    "start:dev": "nodemon"
   },
   "author": "Andrei Auchynnikau",
   "keywords": [],

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const ESLintPlugin = require("eslint-webpack-plugin");
 const path = require("path");
 
 module.exports = {
@@ -12,7 +10,6 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".js"],
   },
-  plugins: [new ESLintPlugin({ extensions: "ts" })],
   devtool: "inline-source-map",
   module: {
     rules: [
@@ -21,5 +18,9 @@ module.exports = {
         use: "ts-loader",
       },
     ],
+  },
+  externals: {
+    bufferutil: "bufferutil",
+    "utf-8-validate": "utf-8-validate",
   },
 };
