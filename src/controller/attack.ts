@@ -49,7 +49,7 @@ function feedBackAttacMessage(game: Game, data: AttackFeedbackServer["data"]) {
   sendServerMessageforClient(game.clientsKey[2], convertServerMessage(message));
 }
 
-function finishGame(
+export function finishGame(
   winPlayer: 1 | 2,
   game: Game,
   server: WebSocket.Server<typeof WebSocket, typeof IncomingMessage>,
