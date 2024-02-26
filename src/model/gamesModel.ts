@@ -258,7 +258,7 @@ export class Game {
   }
 
   randomAttac(): Coordinates {
-    const isSuccessfully = getRandomIntInclusive(0, 1) === 0 ? false : true;
+    const isSuccessfully = getRandomIntInclusive(0, 2) === 0 ? true : false;
     let coondinates = isSuccessfully
       ? this.successfullyRandomAttac()
       : this.failRandomAttac();

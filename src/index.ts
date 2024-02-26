@@ -3,6 +3,10 @@ import { httpServer } from "./http_server/index.js";
 import handleMessage from "./service/handleMessage";
 import { convertMessageClientToStr } from "./utils/messageHelper";
 import ClientsModel from "./model/clientsModel";
+import { clients } from "./data/clients";
+import GamesModel from "./model/gamesModel";
+import { UsersModel } from "./model/usersModel";
+import registrationUser from "./controller/registrationUser";
 
 const HTTP_PORT = 8181;
 const SOKET_PORT = 3000;
@@ -42,6 +46,25 @@ server.on("connection", (ws) => {
   });
 
   ws.on("close", () => {
+    const { gameID } = clients[index];
+    if (gameID !== null) {
+      const game = GamesModel.getGamebyId(gameID);
+      if (!game) throw new Error("game is not found");
+      const otherClientKey =
+        game.clientsKey[1] === index ? game.clientsKey[2] : game.clientsKey[1];
+      const otherClient = clients[otherClientKey];
+      const userData =
+        otherClient.userID !== null
+          ? UsersModel.getUserbyID(otherClient.userID)
+          : null;
+
+      if (userData !== null) {
+        registrationUser(server, otherClientKey, {
+          name: userData.name,
+          password: userData.password,
+        });
+      }
+    }
     ClientsModel.deleteClient(index);
     console.log(`Client disconnection. Id: ${index}`);
   });
